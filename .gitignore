@@ -1,0 +1,10 @@
+node_modules/
+build/
+generated/
+public/vault/
+public/_data/
+.react-router/
+.env*
+!.env.example
+.vercel
+*.log
