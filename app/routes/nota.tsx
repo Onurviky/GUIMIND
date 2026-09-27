@@ -44,7 +44,7 @@ export default function NotaPage({ loaderData }: Route.ComponentProps) {
             <nav aria-label="Ubicación" className="reveal text-base" style={i(0)}>
               <ol className="flex flex-wrap items-center gap-2 text-muted">
                 <li>
-                  <Link to="/notas" viewTransition>
+                  <Link to="/notas" viewTransition className="inline-flex min-h-11 items-center">
                     Notas
                   </Link>
                 </li>

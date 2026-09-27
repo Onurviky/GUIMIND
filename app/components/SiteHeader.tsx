@@ -7,10 +7,11 @@ import { ThemeToggle } from "./ThemeToggle";
 
 /**
  * Navegación principal: máximo 5-6 ítems. Solo se listan secciones que existen;
- * "Herramientas" y "Preguntale al cerebro" se suman en las Fases 3 y 4.
+ * "Preguntale al cerebro" se suma en la Fase 4.
  */
 const NAV = [
   { to: "/notas", label: "Notas" },
+  { to: "/herramientas", label: "Herramientas" },
   { to: "/grafo", label: "Grafo" },
 ] as const;
 

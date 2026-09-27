@@ -35,7 +35,7 @@ export default function TagPage({ loaderData }: Route.ComponentProps) {
       <div className="grid-bg pointer-events-none absolute inset-x-0 top-0 h-72" aria-hidden="true" />
       <div className="relative mx-auto max-w-4xl px-4 py-12 sm:px-6">
         <p className="reveal text-base" style={i(0)}>
-          <Link to="/notas" viewTransition>
+          <Link to="/notas" viewTransition className="inline-flex min-h-11 items-center">
             Todas las notas
           </Link>
         </p>

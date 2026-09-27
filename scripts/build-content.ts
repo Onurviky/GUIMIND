@@ -8,6 +8,7 @@
  *   generated/manifest.json  índice liviano: slug, título, carpeta, tags...
  *   generated/graph.json     grafo con layout precalculado
  *   generated/search-meta.json  nombre del índice de búsqueda (lo importa el cliente)
+ *   generated/tools.json     links de cada calculadora a sus notas (resueltos)
  *   public/_data/search.<hash>.json  índice MiniSearch (se descarga al abrir la búsqueda)
  *   public/vault/**          solo los archivos que usan las notas publicadas
  *
@@ -21,6 +22,8 @@ import { formatReport, processVault } from "../src/lib/obsidian";
 import { loadVault } from "../src/lib/obsidian/load";
 import type { ManifestEntry } from "../src/lib/content-types";
 import { computeGraph } from "../src/lib/graph";
+import { TOOLS, type ToolLinks } from "../src/calc/catalog";
+import { PARAMETROS, parametrosFaltantes } from "../src/data/parametros";
 import { searchIndexOptions, type SearchDoc } from "../src/lib/search";
 
 const root = resolve(import.meta.dirname, "..");
@@ -72,6 +75,27 @@ const searchFile = `search.${createHash("sha256").update(searchJson).digest("hex
 await writeFile(join(dataDir, searchFile), searchJson);
 await writeFile(join(outDir, "search-meta.json"), JSON.stringify({ url: `/_data/${searchFile}`, bytes: searchJson.length }));
 
+// Calculadoras: cada concepto debe apuntar a una nota publicada.
+const byTitle = new Map(manifest.map((n) => [n.title.toLowerCase(), n]));
+const toolWarnings: string[] = [];
+const toolLinks: ToolLinks[] = TOOLS.map((tool) => ({
+  id: tool.id,
+  notes: tool.conceptNotes.flatMap((title) => {
+    const note = byTitle.get(title.toLowerCase());
+    if (!note) {
+      toolWarnings.push(`${tool.title}: no hay una nota publicada "${title}"; el link se omite`);
+      return [];
+    }
+    return [{ title: note.title, slug: note.slug }];
+  }),
+}));
+for (const tool of TOOLS) {
+  for (const id of parametrosFaltantes(tool.params)) {
+    toolWarnings.push(`${tool.title}: falta el valor de "${PARAMETROS[id].nombre}" en src/data/parametros.ts (se le pide al usuario)`);
+  }
+}
+await writeFile(join(outDir, "tools.json"), JSON.stringify(toolLinks));
+
 for (const asset of assets) {
   const dest = join(root, "public", ...asset.url.split("/").filter(Boolean));
   await mkdir(dirname(dest), { recursive: true });
@@ -85,4 +109,5 @@ console.log(
     `índice de búsqueda de ${Math.ceil(searchJson.length / 1024)} KB (${ms} ms)`,
 );
 console.log(formatReport(issues).replace(/^/gm, "[contenido] "));
+for (const w of toolWarnings) console.log(`[calculadoras] ${w}`);
 console.log("");

@@ -1,11 +1,15 @@
 import { GraphView } from "~/components/GraphView";
 import { getGraph } from "~/lib/content.server";
+import { skipRevalidationOnSearchChange } from "~/hooks/useUrlState";
 import { site } from "~/site";
 import type { Route } from "./+types/grafo";
 
 export async function loader() {
   return { graph: getGraph() };
 }
+
+// Los filtros viven en la URL: cambiarlos no vuelve a pedir el grafo.
+export const shouldRevalidate = skipRevalidationOnSearchChange;
 
 export function meta() {
   return [

@@ -149,6 +149,8 @@
   html {
     font-size: 100%;
     -webkit-text-size-adjust: 100%;
+    /* La cabecera es fija: lo que recibe foco o scroll no queda tapado (WCAG 2.4.11). */
+    scroll-padding-top: 5rem;
   }
   body {
     background: var(--bg);

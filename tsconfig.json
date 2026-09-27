@@ -10,7 +10,7 @@
     "jsx": "react-jsx",
     "rootDirs": [".", "./.react-router/types"],
     "baseUrl": ".",
-    "paths": { "~/*": ["./app/*"], "@content/*": ["./src/lib/*"] },
+    "paths": { "~/*": ["./app/*"], "@content/*": ["./src/lib/*"], "@src/*": ["./src/*"] },
     "esModuleInterop": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,

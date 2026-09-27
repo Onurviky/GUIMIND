@@ -65,6 +65,26 @@ Cada build lista en consola los links rotos, ambiguos y a notas privadas, ademá
 - **Grafo (`/grafo`):** el layout se calcula en el build (d3-force, determinístico), así que se prerenderiza y funciona sin JavaScript. Tiene filtros por carpeta y tema (se guardan en la URL), zoom con botones o `Ctrl + rueda` y una vista alternativa en tabla.
 - **Colores del grafo:** solo las 3 carpetas con más notas llevan color. Es el máximo que pasa la validación de daltonismo con todos los pares mezclados, en ambos temas. El resto va en gris.
 
+## Calculadoras
+
+Cada calculadora tiene tres partes separadas:
+
+| Parte | Dónde | Regla |
+|---|---|---|
+| Fórmula | `src/calc/<nombre>.ts` | Función pura, sin UI, con tests en `tests/` |
+| Datos del sector | `src/data/parametros.ts` | Nunca inventados: valor, unidad, fuente, fecha y si es estimado. `null` = falta |
+| Página | `app/routes/herramientas.<nombre>.tsx` | Usa `NumberField`, `useUrlState` y muestra supuestos y fórmula |
+
+Mientras un parámetro sea `null`, la calculadora se lo pide al usuario y el build lo avisa en consola (`[calculadoras] falta el valor de ...`).
+
+### Cómo sumar una calculadora nueva
+
+1. Escribí la fórmula como función pura en `src/calc/` y sus tests (`npm test`).
+2. Si usa datos del sector, agregalos a `src/data/parametros.ts` con fuente y fecha (o `null`).
+3. Registrala en `src/calc/catalog.ts`: `id`, título, resumen, `conceptNotes` (títulos de notas del vault) y `params`. El build verifica que esas notas existan y estén publicadas.
+4. Creá la página en `app/routes/herramientas.<id>.tsx` y la ruta en `app/routes.ts`. La prerenderización toma el `id` del catálogo.
+5. Checklist UX: solo datos imprescindibles arriba, el resto en "Opciones avanzadas"; unidades visibles; mensajes de error que dicen cómo corregir; supuestos, fuente y fecha junto al resultado; tabla alternativa para cada gráfico.
+
 ## Estructura
 
 ```
@@ -73,6 +93,8 @@ scripts/build-content  vault → generated/*.json + public/vault/
 src/lib/obsidian/      parser (funciones puras, testeadas)
 src/lib/graph.ts       layout del grafo (build)
 src/lib/search.ts      opciones del índice (compartidas build/navegador)
+src/calc/              fórmulas de las calculadoras (puras, testeadas) y catálogo
+src/data/parametros.ts datos del sector con fuente y fecha
 app/                   sitio React Router (rutas, componentes, estilos)
 tests/                 Vitest
 ```

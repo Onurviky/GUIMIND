@@ -6,4 +6,6 @@ export default [
   route("notas/*", "routes/nota.tsx"),
   route("tags/*", "routes/tag.tsx"),
   route("grafo", "routes/grafo.tsx"),
+  route("herramientas", "routes/herramientas.tsx"),
+  route("herramientas/dimensionamiento-solar", "routes/herramientas.solar.tsx"),
 ] satisfies RouteConfig;
