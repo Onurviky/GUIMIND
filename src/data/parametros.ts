@@ -1,3 +1,5 @@
+import { formatNumber } from "../calc/number";
+
 /**
  * Datos del sector que usan las calculadoras.
  *
@@ -38,10 +40,39 @@ export const PARAMETROS = {
     estimado: false,
     nota: "Se usa solo para estimar la cantidad de paneles. Depende del modelo elegido.",
   },
+  tipoCambio: {
+    nombre: "Tipo de cambio de referencia",
+    valor: null,
+    unidad: "$/USD",
+    fuente: null,
+    fecha: null,
+    estimado: false,
+    nota: "Para pasar precios de la energía en pesos a dólares. Cambia seguido: siempre con fecha.",
+  },
+  degradacionAnual: {
+    nombre: "Degradación anual de los paneles",
+    valor: null,
+    unidad: "%/año",
+    fuente: null,
+    fecha: null,
+    estimado: true,
+    nota: "Pérdida de generación por año. La declara el fabricante en la garantía de rendimiento.",
+  },
 } satisfies Record<string, Parametro>;
 
 export type ParametroId = keyof typeof PARAMETROS;
 
 export function parametrosFaltantes(ids: readonly ParametroId[]): ParametroId[] {
   return ids.filter((id) => PARAMETROS[id].valor === null);
+}
+
+/** Valor como texto para precargar un campo ("0,8"), o "" si falta. */
+export function paramAsText(p: Parametro, decimals: number): string {
+  return p.valor == null ? "" : formatNumber(p.valor, decimals).replace(/\./g, "");
+}
+
+/** "fuente, 27 de septiembre de 2026 (estimado)" o "dato tuyo". */
+export function paramSource(p: Parametro, usedValue: number | null, formatDate: (iso: string) => string): string {
+  if (p.valor == null || usedValue !== p.valor) return "dato tuyo";
+  return `${p.fuente ?? "sin fuente"}${p.fecha ? `, ${formatDate(p.fecha)}` : ""}${p.estimado ? " (estimado)" : ""}`;
 }

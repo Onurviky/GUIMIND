@@ -28,3 +28,10 @@ export function formatNumber(n: number, decimals = 0): string {
   }
   return f.format(n);
 }
+
+const money = new Intl.NumberFormat("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+/** Montos de factura: siempre con centavos. 1234.5 → "$ 1.234,50". */
+export function formatMoney(n: number, symbol = "$"): string {
+  return `${symbol} ${money.format(n)}`;
+}

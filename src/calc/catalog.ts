@@ -26,6 +26,30 @@ export const TOOLS: ToolMeta[] = [
     params: ["performanceRatio", "potenciaPanelWp"],
     revisado: "2026-09-27",
   },
+  {
+    id: "retorno-solar",
+    title: "Retorno de una instalación solar",
+    summary: "En cuántos años se recupera la inversión en paneles, calculado en dólares para no confundir inflación con ahorro.",
+    conceptNotes: ["Generación distribuida", "Energía solar fotovoltaica", "Potencia y energía"],
+    params: ["tipoCambio", "degradacionAnual"],
+    revisado: "2026-09-27",
+  },
+  {
+    id: "ahorro-eficiencia",
+    title: "Ahorro por eficiencia",
+    summary: "Cuánta energía y plata ahorrás al reemplazar equipos por otros más eficientes, y en cuánto tiempo se paga el cambio.",
+    conceptNotes: ["Potencia y energía", "Eficiencia energética"],
+    params: [],
+    revisado: "2026-09-27",
+  },
+  {
+    id: "comparador-tarifas",
+    title: "Comparador de tarifas",
+    summary: "Cuánto pagarías con dos tarifas distintas según tu consumo, y a partir de qué consumo conviene cada una.",
+    conceptNotes: ["Potencia y energía", "Tarifas eléctricas"],
+    params: [],
+    revisado: "2026-09-27",
+  },
 ];
 
 /** Links a notas ya resueltos en el build (generated/tools.json). */

@@ -8,4 +8,7 @@ export default [
   route("grafo", "routes/grafo.tsx"),
   route("herramientas", "routes/herramientas.tsx"),
   route("herramientas/dimensionamiento-solar", "routes/herramientas.solar.tsx"),
+  route("herramientas/retorno-solar", "routes/herramientas.retorno.tsx"),
+  route("herramientas/ahorro-eficiencia", "routes/herramientas.eficiencia.tsx"),
+  route("herramientas/comparador-tarifas", "routes/herramientas.tarifas.tsx"),
 ] satisfies RouteConfig;

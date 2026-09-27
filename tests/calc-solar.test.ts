@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { checkField, type FieldSpec } from "../src/calc/fields";
-import { formatNumber, parseDecimal } from "../src/calc/number";
+import { formatMoney, formatNumber, parseDecimal } from "../src/calc/number";
 import { DIAS_POR_MES, dimensionarSolar } from "../src/calc/solar";
 
 // Valores de PRUEBA para verificar la aritmética; no son datos del sector.
@@ -101,5 +101,7 @@ describe("checkField", () => {
   });
   it("formatea en es-AR", () => {
     expect(formatNumber(1234.567, 2)).toBe("1.234,57");
+    expect(formatMoney(12.5)).toBe("$ 12,50");
+    expect(formatMoney(6000)).toBe("$ 6.000,00");
   });
 });
