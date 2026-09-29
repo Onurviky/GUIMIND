@@ -219,7 +219,7 @@ describe("embeds", () => {
 describe("tags", () => {
   it("inline y frontmatter, sin falsos positivos", () => {
     const { note } = run({
-      "A.md": pub("Sobre #solar y #Energía/Renovable. No es tag: #123 ni a#b.\n\n# Título", "tags: tarifas\n"),
+      "A.md": pub("Sobre #solar y #Energía/Renovable. No es tag: #123 ni a#b ni #30/50.\n\n# Título", "tags: tarifas\n"),
     });
     const n = note("a");
     expect(n.tags).toEqual(["energía/renovable", "solar", "tarifas"]);
@@ -336,5 +336,17 @@ describe("descripción", () => {
     const { note } = run({ "A.md": pub(long) });
     expect(note("a").description.endsWith(".")).toBe(true);
     expect(note("a").description).not.toContain("…");
+  });
+
+  it("no se queda en una abreviatura al principio", () => {
+    const text = `TPR S.A. ${"es la concesionaria de la terminal de contenedores del puerto de Rosario ".repeat(4)}fin.`;
+    const { note } = run({ "A.md": pub(text) });
+    expect(note("a").description.length).toBeGreaterThan(80);
+  });
+
+  it("no parte la frase en números con punto", () => {
+    const text = "Mercados de carbono voluntarios y de cumplimiento, estándares Verra, Artículo 6 del Acuerdo de París, Ley 27.520.";
+    const { note } = run({ "A.md": pub(text) });
+    expect(note("a").description).toBe(text);
   });
 });

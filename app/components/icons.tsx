@@ -24,6 +24,12 @@ export const ArrowRight = (p: IconProps) => (
   </Svg>
 );
 
+export const ChevronRight = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="m9 6 6 6-6 6" />
+  </Svg>
+);
+
 export const Sun = (p: IconProps) => (
   <Svg {...p}>
     <circle cx="12" cy="12" r="4" />
@@ -34,6 +40,12 @@ export const Sun = (p: IconProps) => (
 export const Moon = (p: IconProps) => (
   <Svg {...p}>
     <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" />
+  </Svg>
+);
+
+export const ExternalLink = (p: IconProps) => (
+  <Svg {...p}>
+    <path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
   </Svg>
 );
 
@@ -112,9 +124,8 @@ export const List = (p: IconProps) => (
 export function LogoMark({ className }: IconProps) {
   return (
     <svg viewBox="0 0 32 32" aria-hidden="true" className={className ?? "size-8"}>
-      <circle cx="16" cy="16" r="15" fill="var(--link)" />
-      <circle cx="16" cy="16" r="11.5" fill="none" stroke="var(--bg)" strokeOpacity=".25" />
-      <path d="M17.5 6.5 10 17.5h5.2l-1.2 8 7.8-11.2h-5.3z" fill="var(--amber)" />
+      <rect width="32" height="32" rx="2" fill="var(--ink)" />
+      <path d="M17.5 6.5 10 17.5h5.2l-1.2 8 7.8-11.2h-5.3z" fill="var(--bg)" />
     </svg>
   );
 }

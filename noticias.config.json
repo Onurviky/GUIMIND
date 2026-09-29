@@ -1,0 +1,26 @@
+{
+  "_ayuda": "Temas que GuiMind busca cada semana en Bing Noticias. Salen de los sectores y las notas más referenciadas de la wiki. Podés agregar, sacar o cambiar búsquedas; 'sector' tiene que ser uno de los del vault. Se pueden usar comillas para frases exactas y -palabra para excluir.",
+  "carpetaEnElVault": "02-wiki/noticias",
+  "diasEntreBusquedas": 7,
+  "maxNoticias": 30,
+  "temas": [
+    { "busqueda": "Vaca Muerta", "sector": "hidrocarburos" },
+    { "busqueda": "YPF", "sector": "hidrocarburos" },
+    { "busqueda": "GNL Argentina", "sector": "hidrocarburos" },
+    { "busqueda": "Secretaría de Energía resolución", "sector": "hidrocarburos" },
+    { "busqueda": "ENARGAS", "sector": "hidrocarburos" },
+    { "busqueda": "\"puerto de Rosario\" -Fuerteventura -Canarias -\"Puerto del Rosario\"", "sector": "logistica-portuaria" },
+    { "busqueda": "ENAPRO", "sector": "logistica-portuaria" },
+    { "busqueda": "Hidrovía Paraná", "sector": "logistica-portuaria" },
+    { "busqueda": "Timbúes puerto", "sector": "logistica-portuaria" },
+    { "busqueda": "RIGI", "sector": "hidrocarburos" },
+    { "busqueda": "arenas fracking Entre Ríos", "sector": "arenas-fracking" },
+    { "busqueda": "arena silícea Vaca Muerta", "sector": "arenas-fracking" },
+    { "busqueda": "Belgrano Cargas", "sector": "ferrocarril-vial" },
+    { "busqueda": "transporte de cargas Santa Fe", "sector": "ferrocarril-vial" },
+    { "busqueda": "energías renovables Argentina", "sector": "renovables" },
+    { "busqueda": "CAMMESA", "sector": "renovables" },
+    { "busqueda": "bonos de carbono Argentina", "sector": "bonos-carbono" },
+    { "busqueda": "Santa Fe energía ley", "sector": "legislacion-santa-fe" }
+  ]
+}

@@ -8,3 +8,4 @@ public/_data/
 !.env.example
 .vercel
 *.log
+data/

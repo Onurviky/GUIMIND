@@ -12,7 +12,7 @@ export function TagList({ tags, label = "Temas" }: { tags: string[]; label?: str
             <Link
               to={tagUrl(t)}
               viewTransition
-              className="inline-flex min-h-11 items-center rounded-full border border-border bg-surface px-3.5 text-base transition-colors hover:border-amber"
+              className="inline-flex min-h-11 items-center rounded-sm border border-border bg-surface px-3 text-base transition-colors hover:border-ink"
             >
               #{t}
             </Link>

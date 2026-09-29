@@ -3,6 +3,8 @@ export interface VaultFile {
   path: string;
   /** Contenido de texto; solo para .md. */
   content?: string;
+  /** Ruta absoluta en el disco (para copiar assets cuando el vault se arma con VAULT_INCLUDE). */
+  diskPath?: string;
 }
 
 export interface Heading {

@@ -35,8 +35,11 @@ export function parseFrontmatter(raw: string): ParsedFrontmatter {
     publishNotBoolean: "publish" in data && typeof data.publish !== "boolean",
     title: typeof data.title === "string" && data.title.trim() ? data.title.trim() : null,
     aliases: toStringList(data.aliases ?? data.alias),
-    tags: toStringList(data.tags ?? data.tag, /[,\s]+/).map(normalizeTag).filter(Boolean),
-    updated: toIsoDate(data.updated ?? data.modified ?? data.date),
+    // `sector` y `actualizado` son las convenciones del vault "Cerebro Digital IA".
+    tags: [...toStringList(data.tags ?? data.tag, /[,\s]+/), ...toStringList(data.sector)]
+      .map(normalizeTag)
+      .filter(Boolean),
+    updated: toIsoDate(data.updated ?? data.actualizado ?? data.modified ?? data.date),
     description:
       typeof data.description === "string" && data.description.trim()
         ? data.description.trim()

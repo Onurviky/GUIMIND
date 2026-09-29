@@ -4,13 +4,16 @@ import { spawn } from "node:child_process";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig, type Plugin } from "vite";
+import { vaultConfig } from "./scripts/vault-config";
 
 /**
  * En desarrollo: si cambia algo del vault, se reprocesa el contenido y se
  * recarga el navegador. Así se edita en Obsidian y se ve el resultado al instante.
  */
 function vaultWatcher(): Plugin {
-  const vaultDir = resolve(process.env.VAULT_DIR ?? "content");
+  const config = vaultConfig(process.cwd());
+  // Con VAULT_INCLUDE se vigila solo lo que se lee: el resto del vault puede ser enorme.
+  const watched = config.include.length ? config.include.map((p) => resolve(config.dir, p)) : [config.dir];
   let timer: NodeJS.Timeout | undefined;
   let running = false;
   let pending = false;
@@ -19,7 +22,7 @@ function vaultWatcher(): Plugin {
     name: "guimind:vault-watcher",
     apply: "serve",
     configureServer(server) {
-      server.watcher.add(vaultDir);
+      server.watcher.add(watched);
       const rebuild = () => {
         if (running) {
           pending = true;
@@ -37,7 +40,7 @@ function vaultWatcher(): Plugin {
         });
       };
       const onChange = (file: string) => {
-        if (!resolve(file).startsWith(vaultDir)) return;
+        if (!watched.some((w) => resolve(file).startsWith(w))) return;
         clearTimeout(timer);
         timer = setTimeout(rebuild, 250); // agrupa ráfagas de guardado
       };

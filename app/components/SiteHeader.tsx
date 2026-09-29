@@ -6,13 +6,13 @@ import { SearchDialog, useSearchShortcut, type SearchDialogHandle } from "./Sear
 import { ThemeToggle } from "./ThemeToggle";
 
 /**
- * Navegación principal: máximo 5-6 ítems. Solo se listan secciones que existen;
- * "Preguntale al cerebro" se suma en la Fase 4.
+ * Navegación principal: máximo 5-6 ítems. Solo se listan secciones que existen.
  */
 const NAV = [
   { to: "/notas", label: "Notas" },
-  { to: "/herramientas", label: "Herramientas" },
   { to: "/grafo", label: "Grafo" },
+  { to: "/noticias", label: "Novedades" },
+  { to: "/preguntar", label: "Preguntale al cerebro" },
 ] as const;
 
 export function SiteHeader() {
@@ -38,15 +38,15 @@ export function SiteHeader() {
   }, []);
 
   return (
-    <header className="site-header sticky top-0 z-40 border-b border-border/70 bg-bg/80 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
+    <header className="site-header sticky top-0 z-40 border-b border-border bg-bg/95 backdrop-blur">
+      <div className="mx-auto flex h-[4.5rem] max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
         <Link
           to="/"
           viewTransition
           className="group flex min-h-11 items-center gap-2.5 text-ink no-underline hover:text-ink"
           aria-label={`${site.name}, ir al inicio`}
         >
-          <LogoMark className="size-8 transition-transform duration-300 ease-out group-hover:-rotate-12" />
+          <LogoMark className="size-7" />
           <span className="text-lg font-bold tracking-tight">{site.name}</span>
         </Link>
 
@@ -67,7 +67,7 @@ export function SiteHeader() {
           <button
             type="button"
             onClick={openSearch}
-            className="group flex min-h-11 items-center gap-2 rounded-full border border-border bg-surface px-3 text-muted transition-colors hover:border-link hover:text-ink md:pr-2"
+            className="group flex min-h-11 items-center gap-2 rounded-sm border border-border bg-surface px-3 text-muted transition-colors hover:border-link hover:text-ink md:pr-2"
             aria-keyshortcuts="Control+K Meta+K /"
           >
             <Search className="size-5" />
@@ -84,7 +84,7 @@ export function SiteHeader() {
             aria-expanded={menuOpen}
             aria-controls="mobile-menu"
             aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
-            className="grid size-11 place-items-center rounded-full border border-border bg-surface text-ink md:hidden"
+            className="grid size-11 place-items-center rounded-sm border border-border bg-surface text-ink md:hidden"
           >
             {menuOpen ? <Close /> : <Menu />}
           </button>
@@ -123,7 +123,7 @@ export function SiteHeader() {
 }
 
 function desktopLinkClass({ isActive }: { isActive: boolean }) {
-  return `relative flex min-h-11 items-center px-3 font-medium no-underline after:absolute after:inset-x-3 after:bottom-2 after:h-0.5 after:origin-left after:rounded-full after:bg-amber after:transition-transform after:duration-200 hover:text-ink hover:after:scale-x-100 ${
+  return `relative flex min-h-11 items-center px-3 font-medium no-underline after:absolute after:inset-x-3 after:bottom-2 after:h-px after:origin-left after:rounded-full after:bg-ink after:transition-transform after:duration-200 hover:text-ink hover:after:scale-x-100 ${
     isActive ? "text-ink after:scale-x-100" : "text-muted after:scale-x-0"
   }`;
 }

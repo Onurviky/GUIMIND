@@ -19,7 +19,7 @@ export function NoteList({ notes, columns = 1 }: { notes: NoteRef[]; columns?: 1
           <Link
             to={`/notas/${n.slug}`}
             viewTransition
-            className="text-lg font-semibold after:absolute after:inset-0 after:rounded-[14px] after:content-['']"
+            className="text-lg font-semibold after:absolute after:inset-0 after:rounded-sm after:content-['']"
           >
             {n.title}
           </Link>

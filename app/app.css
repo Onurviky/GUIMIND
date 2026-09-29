@@ -1,31 +1,37 @@
 @import "tailwindcss";
-@import "@fontsource-variable/space-grotesk";
+@import "@fontsource-variable/inter";
 @import "@fontsource-variable/source-serif-4";
 @plugin "@tailwindcss/typography";
 
 /*
- * Dirección visual: "editorial técnico con pulso eléctrico".
- * Papel cálido + tinta petróleo como base; ámbar solar como único acento fuerte.
- * Contraste verificado (WCAG AA) en ambos temas:
- *   claro  → texto 15.1 · secundario 6.9 · links 7.3 · botón 8.0
- *   oscuro → texto 15.9 · secundario 8.0 · links 11.5 · botón 11.4
+ * Dirección visual: minimalista y profesional.
+ * Blanco, casi negro y grises cálidos; un único acento azul pizarra (#1F3A5F)
+ * para links y detalles. Sin degradados, sin franjas de color, sin sombras:
+ * líneas finas, mucho aire y la tipografía haciendo el trabajo (títulos en serif).
+ * Los tokens --amber* conservan su nombre histórico: hoy son el color del botón (tinta).
+ * Contraste verificado (WCAG AA):
+ *   claro  → texto 18.4 · secundario 6.7 (6.2 sobre gris) · links 11.5 · botón 18.4
+ *   oscuro → texto 16.1 · secundario 7.2 · links 9.3 · botón 16.1
  */
 :root {
   color-scheme: light;
-  --bg: #f5f3ec;
-  --surface: #fffdf7;
-  --surface-2: #eeebe1;
-  --ink: #13201f;
-  --muted: #4a5652;
-  --border: #dad6ca;
-  --link: #0b5a53;
-  --amber: #f0a500;
-  --on-amber: #13201f;
-  --amber-text: #8a5a00;
-  --focus: #b4530a;
-  --glow: rgb(240 165 0 / 0.35);
-  --shadow: 0 1px 2px rgb(19 32 31 / 0.06), 0 8px 24px -12px rgb(11 90 83 / 0.25);
-  --grid-line: rgb(11 90 83 / 0.09);
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f6f6f4;
+  --ink: #141414;
+  --muted: #5c5c5c;
+  --border: #e6e6e3;
+  --link: #1f3a5f;
+  --amber: #141414;
+  --amber-hover: #333333;
+  --on-amber: #ffffff;
+  --amber-text: #1f3a5f;
+  --gold: #1f3a5f;
+  --gold-text: #1f3a5f;
+  --focus: #1f3a5f;
+  --glow: rgb(20 20 20 / 0.12);
+  --shadow: none;
+  --grid-line: rgb(20 20 20 / 0.05);
 
   --c-note: #2458b3;
   --c-abstract: #0e7490;
@@ -51,20 +57,23 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --bg: #0a1113;
-    --surface: #101a1d;
-    --surface-2: #152226;
-    --ink: #e6ece9;
-    --muted: #9aaca7;
-    --border: #213033;
-    --link: #6cdcc4;
-    --amber: #ffc233;
-    --on-amber: #1a1405;
-    --amber-text: #ffc233;
-    --focus: #ffc233;
-    --glow: rgb(255 194 51 / 0.3);
-    --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 12px 32px -14px rgb(108 220 196 / 0.22);
-    --grid-line: rgb(108 220 196 / 0.07);
+    --bg: #111111;
+    --surface: #111111;
+    --surface-2: #1a1a1a;
+    --ink: #ededed;
+    --muted: #a0a0a0;
+    --border: #2a2a2a;
+    --link: #9db8dc;
+    --amber: #ededed;
+    --amber-hover: #ffffff;
+    --on-amber: #111111;
+    --amber-text: #9db8dc;
+    --gold: #9db8dc;
+    --gold-text: #9db8dc;
+    --focus: #9db8dc;
+    --glow: rgb(237 237 237 / 0.12);
+    --shadow: none;
+    --grid-line: rgb(237 237 237 / 0.04);
 
     --c-note: #7aa7f5;
     --c-abstract: #5ec8dc;
@@ -89,20 +98,23 @@
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #0a1113;
-  --surface: #101a1d;
-  --surface-2: #152226;
-  --ink: #e6ece9;
-  --muted: #9aaca7;
-  --border: #213033;
-  --link: #6cdcc4;
-  --amber: #ffc233;
-  --on-amber: #1a1405;
-  --amber-text: #ffc233;
-  --focus: #ffc233;
-  --glow: rgb(255 194 51 / 0.3);
-  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 12px 32px -14px rgb(108 220 196 / 0.22);
-  --grid-line: rgb(108 220 196 / 0.07);
+  --bg: #111111;
+  --surface: #111111;
+  --surface-2: #1a1a1a;
+  --ink: #ededed;
+  --muted: #a0a0a0;
+  --border: #2a2a2a;
+  --link: #9db8dc;
+  --amber: #ededed;
+  --amber-hover: #ffffff;
+  --on-amber: #111111;
+  --amber-text: #9db8dc;
+  --gold: #9db8dc;
+  --gold-text: #9db8dc;
+  --focus: #9db8dc;
+  --glow: rgb(237 237 237 / 0.12);
+  --shadow: none;
+  --grid-line: rgb(237 237 237 / 0.04);
 
   --c-note: #7aa7f5;
   --c-abstract: #5ec8dc;
@@ -135,8 +147,16 @@
   --color-amber: var(--amber);
   --color-on-amber: var(--on-amber);
   --color-amber-text: var(--amber-text);
-  --font-display: "Space Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
+  --color-amber-hover: var(--amber-hover);
+  --color-gold: var(--gold);
+  --color-gold-text: var(--gold-text);
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Source Serif 4 Variable", ui-serif, Georgia, serif;
   --font-serif: "Source Serif 4 Variable", ui-serif, Georgia, serif;
+  /* Esquinas rectas en todo el sitio (rounded-lg/xl/2xl quedan casi a escuadra). */
+  --radius-lg: 3px;
+  --radius-xl: 3px;
+  --radius-2xl: 4px;
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --shadow-card: var(--shadow);
   --color-series-1: var(--series-1);
@@ -155,16 +175,22 @@
   body {
     background: var(--bg);
     color: var(--ink);
-    font-family: var(--font-display);
+    font-family: var(--font-sans);
     font-size: 1.0625rem;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
+  /* Títulos grandes en serif editorial (estilo BCG); h3 en sans, más funcional. */
   h1,
-  h2,
-  h3 {
+  h2 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.1;
+    text-wrap: balance;
+  }
+  h3 {
+    letter-spacing: -0.01em;
     text-wrap: balance;
   }
   p {
@@ -187,7 +213,7 @@
       text-decoration-thickness 180ms ease-out;
   }
   a:hover {
-    text-decoration-color: var(--amber);
+    text-decoration-color: var(--link);
     text-decoration-thickness: 2px;
   }
   ::selection {
@@ -201,7 +227,7 @@
 @keyframes reveal {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -212,7 +238,7 @@
 /* Entrada escalonada: style={{ "--i": n }} define el orden.
    fill-mode backwards: al terminar no retiene el transform (no pisa los :hover). */
 .reveal {
-  animation: reveal 560ms var(--ease-out-expo) backwards;
+  animation: reveal 420ms var(--ease-out-expo) backwards;
   animation-delay: calc(var(--i, 0) * 70ms);
 }
 
@@ -243,11 +269,11 @@
 .read-progress {
   position: fixed;
   inset: 0 0 auto 0;
-  height: 3px;
+  height: 2px;
   z-index: 60;
   transform-origin: 0 50%;
   transform: scaleX(0);
-  background: linear-gradient(90deg, var(--link), var(--amber));
+  background: var(--ink);
 }
 @supports (animation-timeline: scroll()) {
   .read-progress {
@@ -266,96 +292,83 @@
   }
 }
 
-/* Tarjetas: se elevan levemente al pasar el mouse o con foco. */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  transition:
-    transform 220ms var(--ease-out-expo),
-    box-shadow 220ms ease-out,
-    border-color 220ms ease-out;
-}
-.card:hover,
-.card:focus-within {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow);
-  border-color: color-mix(in srgb, var(--link) 40%, var(--border));
+/* En la capa components: así las utilidades (border-t-..., border-l-...) pueden ajustarla. */
+@layer components {
+  /* Tarjetas: solo una línea fina; al pasar el mouse, la línea se oscurece. */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    transition: border-color 180ms ease-out;
+  }
+  .card:hover,
+  .card:focus-within {
+    border-color: color-mix(in srgb, var(--ink) 45%, var(--border));
+  }
 }
 
-/* Fondo con cuadrícula técnica, desvanecida hacia abajo. */
+/* Fondo con cuadrícula (solo en el grafo, como referencia espacial). */
 .grid-bg {
   background-image:
     linear-gradient(var(--grid-line) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
   background-size: 32px 32px;
-  mask-image: linear-gradient(to bottom, black 30%, transparent 95%);
 }
 
-/* Botón principal: ámbar solar. */
+/* Botón principal: tinta sobre blanco, rectangular. */
 .btn-primary {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
   min-height: 3rem;
   padding: 0 1.5rem;
-  border-radius: 999px;
+  border-radius: 2px;
   background: var(--amber);
   color: var(--on-amber);
-  font-weight: 600;
+  font-weight: 500;
   text-decoration: none;
-  box-shadow: 0 6px 20px -8px var(--glow);
-  transition:
-    transform 180ms var(--ease-out-expo),
-    box-shadow 180ms ease-out;
+  transition: background-color 160ms ease-out;
 }
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 28px -8px var(--glow);
+.btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--amber-hover);
   color: var(--on-amber);
 }
-.btn-primary:active {
-  transform: translateY(0) scale(0.98);
-}
 .btn-primary svg {
-  transition: transform 180ms var(--ease-out-expo);
+  transition: transform 160ms var(--ease-out-expo);
 }
 .btn-primary:hover svg {
   transform: translateX(3px);
 }
 
-/* Red de energía del inicio: pulsos que recorren las líneas. */
-.eg-line {
-  stroke: color-mix(in srgb, var(--link) 35%, transparent);
+/* Rótulo chico en mayúsculas sobre los títulos. */
+.eyebrow {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
-.eg-pulse {
-  stroke: var(--amber);
-  stroke-dasharray: 10 90;
-  stroke-dashoffset: 100;
-  filter: drop-shadow(0 0 4px var(--glow));
-  /* Termina en menos de 5 s (WCAG 2.2.2): es decoración, no se repite para siempre. */
-  animation: eg-flow 1.6s ease-in-out calc(var(--d, 0) * 1ms) 2 both;
+
+/* Link de texto con chevron que avanza al pasar el mouse. */
+.link-chevron {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  font-weight: 500;
 }
-.eg-node {
-  fill: var(--surface);
-  stroke: var(--link);
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: eg-pop 600ms var(--ease-out-expo) calc(var(--d, 0) * 1ms) both;
+.link-chevron svg {
+  transition: transform 160ms var(--ease-out-expo);
 }
-.eg-core {
-  fill: var(--amber);
+.link-chevron:hover svg {
+  transform: translateX(3px);
 }
-@keyframes eg-flow {
-  from {
-    stroke-dashoffset: 100;
-    opacity: 1;
-  }
-  to {
-    stroke-dashoffset: 0;
-    opacity: 0;
-  }
-}
+
+/* Aparición de los nodos del grafo. */
 @keyframes eg-pop {
   from {
     transform: scale(0);
@@ -375,9 +388,6 @@
   ::view-transition-old(root),
   ::view-transition-new(root) {
     animation: none !important;
-  }
-  .eg-pulse {
-    display: none;
   }
 }
 
@@ -453,7 +463,7 @@ dialog.search-dialog {
   max-height: min(36rem, calc(100dvh - 4rem));
   padding: 0;
   border: 1px solid var(--border);
-  border-radius: 18px;
+  border-radius: 3px;
   background: var(--surface);
   color: var(--ink);
   box-shadow: 0 24px 60px -20px rgb(0 0 0 / 0.45);
@@ -522,7 +532,7 @@ dialog.search-dialog[open] {
 }
 .note-body pre {
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 3px;
 }
 .note-body mark {
   background: linear-gradient(transparent 55%, color-mix(in srgb, var(--amber) 45%, transparent) 55%);
@@ -530,7 +540,7 @@ dialog.search-dialog[open] {
   padding: 0 0.1em;
 }
 .note-body img {
-  border-radius: 12px;
+  border-radius: 3px;
   height: auto;
 }
 /* Los diagramas SVG suelen estar dibujados para fondo claro: en oscuro llevan su "papel". */
@@ -548,7 +558,7 @@ dialog.search-dialog[open] {
   overflow-x: auto;
   overflow-y: hidden;
   padding: 1rem;
-  border-radius: 12px;
+  border-radius: 3px;
   background: var(--surface);
   border: 1px solid var(--border);
 }
@@ -569,7 +579,7 @@ dialog.search-dialog[open] {
 .callout {
   --c: var(--c-note);
   margin: 1.75em 0;
-  border-radius: 12px;
+  border-radius: 3px;
   background:
     linear-gradient(90deg, var(--c) 0 4px, transparent 4px),
     color-mix(in srgb, var(--c) 8%, var(--surface));
@@ -643,7 +653,7 @@ details.callout[open] > .callout-content {
 .note-embed {
   margin: 1.75em 0;
   padding: 0.5rem 1.25rem 1rem;
-  border-radius: 12px;
+  border-radius: 3px;
   background: var(--surface);
   border: 1px dashed color-mix(in srgb, var(--link) 45%, var(--border));
   font-style: normal;
@@ -660,3 +670,4 @@ details.callout[open] > .callout-content {
   content: "Fragmento de ";
   color: var(--muted);
 }
+

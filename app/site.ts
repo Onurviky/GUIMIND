@@ -1,8 +1,8 @@
-/** Datos de marca. Provisorios hasta definir nombre, público y objetivo. */
+/** Datos de marca. */
 export const site = {
   name: "GuiMind",
-  tagline: "El sector energético, explicado y conectado",
+  tagline: "Derecho energético, portuario y ambiental, conectado",
   description:
-    "Conceptos, tecnologías y regulación del sector energético en notas claras, enlazadas entre sí como una red.",
+    "La base de conocimiento de la práctica: casos, normativa, proyectos, empresas y organismos del sector energético y portuario, enlazados entre sí.",
   locale: "es-AR",
 } as const;

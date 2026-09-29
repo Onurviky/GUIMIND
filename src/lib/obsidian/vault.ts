@@ -24,6 +24,8 @@ export interface ProcessOptions {
   assetsBase?: string;
   /** Profundidad máxima de embeds anidados. */
   maxEmbedDepth?: number;
+  /** Publica todas las notas, sin exigir `publish: true` (vault de uso personal). */
+  publishAll?: boolean;
 }
 
 interface Working {
@@ -71,12 +73,18 @@ export function processVault(files: VaultFile[], options: ProcessOptions = {}): 
     .sort((a, b) => a.path.localeCompare(b.path))
     .map((file) => {
       const fm = parseFrontmatter(file.content!);
-      if (fm.error) report(file.path)("invalid-frontmatter", `Frontmatter inválido (${fm.error}); la nota no se publica`);
-      if (fm.publishNotBoolean) {
+      const published = options.publishAll === true || fm.publish;
+      if (fm.error) {
+        report(file.path)(
+          "invalid-frontmatter",
+          `Frontmatter inválido (${fm.error}); ${published ? "se publica sin sus campos" : "la nota no se publica"}`,
+        );
+      }
+      if (fm.publishNotBoolean && !published) {
         report(file.path)("publish-not-boolean", "`publish` no es booleano (¿\"true\" entre comillas?); la nota no se publica");
       }
       let slug = pathToSlug(file.path) || "nota";
-      if (fm.publish) {
+      if (published) {
         if (usedSlugs.has(slug)) {
           let n = 2;
           while (usedSlugs.has(`${slug}-${n}`)) n++;
@@ -88,7 +96,7 @@ export function processVault(files: VaultFile[], options: ProcessOptions = {}): 
       const entry: NoteEntry = {
         path: file.path,
         slug,
-        published: fm.publish,
+        published,
         title: fm.title ?? basename(stripExtension(file.path)),
       };
       return { entry, fm };
@@ -334,10 +342,12 @@ function firstParagraph(tree: Root): string | null {
  */
 function summarize(text: string, max = 200): string {
   const first = text.split("\n").find((l) => l.trim().length > 40) ?? text.split("\n")[0] ?? "";
-  const sentences = first.match(/[^.!?]+[.!?]+(?=\s|$)|[^.!?]+$/g) ?? [first];
+  // Lazy y con puntos internos permitidos: "Ley 27.520" o "S.A." no parten la frase.
+  const sentences = first.match(/[^]+?[.!?]+(?=\s|$)|[^]+$/g) ?? [first];
   let out = "";
   for (const s of sentences) {
-    if (out && (out + s).length > max) break;
+    // Con menos de 80 caracteres se sigue sumando: el "punto" pudo ser una abreviatura ("TPR S.A.").
+    if (out.length >= 80 && (out + s).length > max) break;
     out += s;
   }
   out = out.trim();
