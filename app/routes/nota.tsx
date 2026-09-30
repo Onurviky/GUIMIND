@@ -38,7 +38,6 @@ export default function NotaPage({ loaderData }: Route.ComponentProps) {
       <div className="read-progress" aria-hidden="true" />
 
       <div className="relative">
-        <div className="grid-bg pointer-events-none absolute inset-x-0 top-0 h-72" aria-hidden="true" />
         <div className="relative mx-auto max-w-6xl px-4 pt-10 sm:px-6 lg:grid lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-16">
           <article className="min-w-0">
             <nav aria-label="Ubicación" className="reveal text-base" style={i(0)}>
@@ -61,7 +60,7 @@ export default function NotaPage({ loaderData }: Route.ComponentProps) {
             </nav>
 
             <header className="mt-4 pb-8">
-              <h1 className="reveal text-4xl font-bold leading-[1.1] sm:text-5xl" style={i(1)}>
+              <h1 className="reveal text-4xl font-semibold leading-[1.1] sm:text-5xl" style={i(1)}>
                 {note.title}
               </h1>
               {note.aliases.length > 0 && (
@@ -85,7 +84,7 @@ export default function NotaPage({ loaderData }: Route.ComponentProps) {
             </div>
 
             <section aria-labelledby="backlinks" className="mt-16 rounded-2xl border border-border bg-surface-2/60 p-6 sm:p-8">
-              <h2 id="backlinks" className="flex items-center gap-2 text-xl font-bold">
+              <h2 id="backlinks" className="flex items-center gap-2 text-xl font-semibold">
                 <Link2 className="size-5 text-link" />
                 Notas que enlazan acá
               </h2>
@@ -117,7 +116,7 @@ export default function NotaPage({ loaderData }: Route.ComponentProps) {
                         <a
                           href={`#${h.id}`}
                           aria-current={isActive ? "location" : undefined}
-                          className={`inline-block py-1.5 transition-colors ${isActive ? "font-semibold text-ink" : ""}`}
+                          className={`inline-flex min-h-11 items-center py-1 transition-colors ${isActive ? "font-semibold text-ink" : ""}`}
                         >
                           {h.text}
                         </a>

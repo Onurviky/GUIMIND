@@ -1,6 +1,6 @@
 import { GraphView } from "~/components/GraphView";
 import { getGraph } from "~/lib/content.server";
-import { skipRevalidationOnSearchChange } from "~/hooks/useUrlState";
+import { skipRevalidationOnSearchChange } from "~/lib/revalidate";
 import { site } from "~/site";
 import type { Route } from "./+types/grafo";
 
@@ -23,10 +23,10 @@ const i = (n: number) => ({ "--i": n }) as React.CSSProperties;
 export default function GrafoPage({ loaderData }: Route.ComponentProps) {
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-      <p className="reveal text-sm font-semibold uppercase tracking-widest text-amber-text" style={i(0)}>
+      <p className="eyebrow reveal" style={i(0)}>
         Explorar
       </p>
-      <h1 className="reveal mt-2 text-4xl font-bold sm:text-5xl" style={i(1)}>
+      <h1 className="reveal mt-2 text-4xl font-semibold sm:text-5xl" style={i(1)}>
         Grafo de notas
       </h1>
       <p className="reveal mt-4 max-w-2xl text-lg text-muted" style={i(2)}>

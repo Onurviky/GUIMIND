@@ -32,14 +32,13 @@ export default function TagPage({ loaderData }: Route.ComponentProps) {
   const { tag, notes } = loaderData;
   return (
     <div className="relative">
-      <div className="grid-bg pointer-events-none absolute inset-x-0 top-0 h-72" aria-hidden="true" />
       <div className="relative mx-auto max-w-4xl px-4 py-12 sm:px-6">
         <p className="reveal text-base" style={i(0)}>
           <Link to="/notas" viewTransition className="inline-flex min-h-11 items-center">
             Todas las notas
           </Link>
         </p>
-        <h1 className="reveal mt-3 text-4xl font-bold sm:text-5xl" style={i(1)}>
+        <h1 className="reveal mt-3 text-4xl font-semibold sm:text-5xl" style={i(1)}>
           <span className="text-amber-text">#</span>
           {tag}
         </h1>

@@ -38,7 +38,7 @@ export function ThemeToggle() {
       onClick={toggle}
       aria-label={label}
       title={label}
-      className="group grid size-11 place-items-center rounded-full border border-border bg-surface text-ink transition-colors hover:border-link"
+      className="group grid size-11 place-items-center rounded-sm border border-border bg-surface text-ink transition-colors hover:border-link"
     >
       <span className="transition-transform duration-300 ease-out group-hover:rotate-12">
         {theme === "dark" ? <Sun /> : <Moon />}

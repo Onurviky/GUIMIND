@@ -61,7 +61,7 @@ export interface TransformResult {
 }
 
 const INLINE =
-  /(!?)\[\[([^\[\]\n]+?)\]\]|==([^=\n]+?)==|(^|[\s(])#([\p{L}\p{N}_/-]*[\p{L}_/-][\p{L}\p{N}_/-]*)/gu;
+  /(!?)\[\[([^\[\]\n]+?)\]\]|==([^=\n]+?)==|(^|[\s(])#([\p{L}\p{N}_/-]*[\p{L}_][\p{L}\p{N}_/-]*)/gu; // un tag lleva al menos una letra: "#30/50" no es tag
 
 export function transformNote(tree: Root, ctx: TransformContext): TransformResult {
   const result: TransformResult = { outLinks: new Set(), tags: new Set(), headings: [] };

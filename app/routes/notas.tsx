@@ -37,12 +37,11 @@ export default function NotasPage({ loaderData }: Route.ComponentProps) {
   const { total, groups } = loaderData;
   return (
     <div className="relative">
-      <div className="grid-bg pointer-events-none absolute inset-x-0 top-0 h-72" aria-hidden="true" />
       <div className="relative mx-auto max-w-4xl px-4 py-12 sm:px-6">
-        <p className="reveal text-sm font-semibold uppercase tracking-widest text-amber-text" style={i(0)}>
+        <p className="eyebrow reveal" style={i(0)}>
           Biblioteca
         </p>
-        <h1 className="reveal mt-2 text-4xl font-bold sm:text-5xl" style={i(1)}>
+        <h1 className="reveal mt-2 text-4xl font-semibold sm:text-5xl" style={i(1)}>
           Notas
         </h1>
         <p className="reveal mt-4 text-lg text-muted" style={i(2)}>
@@ -59,7 +58,7 @@ export default function NotasPage({ loaderData }: Route.ComponentProps) {
                     className="inline-flex min-h-11 items-center gap-2 rounded-full border border-border bg-surface px-4 transition-colors hover:border-amber"
                   >
                     {g.folder}
-                    <span className="rounded-full bg-surface-2 px-2 text-sm tabular-nums text-muted">{g.notes.length}</span>
+                    <span className="rounded-sm bg-surface-2 px-2 text-sm tabular-nums text-muted">{g.notes.length}</span>
                   </a>
                 </li>
               ))}
@@ -69,7 +68,7 @@ export default function NotasPage({ loaderData }: Route.ComponentProps) {
 
         {groups.map((g) => (
           <section key={g.folder} aria-labelledby={`h-${g.folder}`} className="mt-12 scroll-mt-36" id={g.folder}>
-            <h2 id={`h-${g.folder}`} className="flex items-center gap-3 text-2xl font-bold">
+            <h2 id={`h-${g.folder}`} className="flex items-center gap-3 text-2xl font-semibold">
               <span className="grid size-10 place-items-center rounded-xl bg-surface-2 text-link">
                 <Folder />
               </span>

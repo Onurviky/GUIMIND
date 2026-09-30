@@ -6,9 +6,7 @@ export default [
   route("notas/*", "routes/nota.tsx"),
   route("tags/*", "routes/tag.tsx"),
   route("grafo", "routes/grafo.tsx"),
-  route("herramientas", "routes/herramientas.tsx"),
-  route("herramientas/dimensionamiento-solar", "routes/herramientas.solar.tsx"),
-  route("herramientas/retorno-solar", "routes/herramientas.retorno.tsx"),
-  route("herramientas/ahorro-eficiencia", "routes/herramientas.eficiencia.tsx"),
-  route("herramientas/comparador-tarifas", "routes/herramientas.tarifas.tsx"),
+  route("preguntar", "routes/preguntar.tsx"),
+  route("noticias", "routes/noticias.tsx"),
+  route("api/preguntar", "routes/api.preguntar.ts"),
 ] satisfies RouteConfig;

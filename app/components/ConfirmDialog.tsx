@@ -53,14 +53,14 @@ export function ConfirmDialog({ open, title, description, confirmLabel, cancelLa
           ref={safeRef}
           type="button"
           onClick={onCancel}
-          className="min-h-11 rounded-full border border-border bg-surface px-5 font-semibold text-ink hover:bg-surface-2"
+          className="min-h-11 rounded-sm border border-border bg-surface px-5 font-semibold text-ink hover:bg-surface-2"
         >
           {cancelLabel}
         </button>
         <button
           type="button"
           onClick={onConfirm}
-          className="min-h-11 rounded-full bg-[var(--c-danger)] px-5 font-semibold text-bg hover:opacity-90"
+          className="min-h-11 rounded-sm bg-[var(--c-danger)] px-5 font-semibold text-bg hover:opacity-90"
         >
           {confirmLabel}
         </button>

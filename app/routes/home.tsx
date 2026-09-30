@@ -1,12 +1,16 @@
 import { Link } from "react-router";
-import { EnergyGrid } from "~/components/EnergyGrid";
-import { ArrowRight, Folder } from "~/components/icons";
-import { NoteList } from "~/components/NoteList";
+import { ArrowRight, ChevronRight } from "~/components/icons";
 import { getManifest } from "~/lib/content.server";
+import { formatDate } from "~/lib/format";
+import { ensureFresh, pendingCount } from "~/lib/news.server";
 import { site } from "~/site";
 import type { Route } from "./+types/home";
 
+/** Carpeta del vault donde viven las páginas de overview de cada sector. */
+const SECTORS_FOLDER = "sectores";
+
 export async function loader() {
+  ensureFresh();
   const manifest = getManifest();
   const folders = new Map<string, number>();
   const inbound = new Map<string, number>();
@@ -14,20 +18,35 @@ export async function loader() {
     if (n.folder) folders.set(n.folder, (folders.get(n.folder) ?? 0) + 1);
     for (const target of n.links) inbound.set(target, (inbound.get(target) ?? 0) + 1);
   }
-  // "Empezá por acá": las notas más referenciadas son los conceptos base del vault.
-  const starters = [...manifest]
-    .sort((a, b) => (inbound.get(b.slug) ?? 0) - (inbound.get(a.slug) ?? 0) || a.title.localeCompare(b.title, "es"))
-    .slice(0, 4)
-    .map(({ slug, title, description }) => ({ slug, title, description }));
+  const refs = (slug: string) => inbound.get(slug) ?? 0;
+
+  // Sectores: las páginas de overview, de la más referenciada a la menos.
+  const sectors = manifest
+    .filter((n) => n.folder === SECTORS_FOLDER)
+    .sort((a, b) => refs(b.slug) - refs(a.slug) || a.title.localeCompare(b.title, "es"))
+    .map(({ slug, title, description }) => ({ slug, title, description, refs: refs(slug) }));
+
+  // Tipos de página (carpetas), sin los sectores que ya tienen su propia sección.
+  const types = [...folders]
+    .filter(([f]) => f !== SECTORS_FOLDER)
+    .sort(([a, x], [b, y]) => y - x || a.localeCompare(b, "es"));
+
+  const recent = manifest
+    .filter((n) => n.updated && n.folder && n.folder !== SECTORS_FOLDER)
+    .sort((a, b) => b.updated!.localeCompare(a.updated!) || refs(b.slug) - refs(a.slug))
+    .slice(0, 6)
+    .map(({ slug, title, description, folder, updated }) => ({ slug, title, description, folder, updated: updated! }));
 
   return {
-    stats: {
-      notas: manifest.length,
-      temas: new Set(manifest.flatMap((n) => n.tags)).size,
-      conexiones: manifest.reduce((sum, n) => sum + n.links.length, 0),
-    },
-    folders: [...folders].sort(([a], [b]) => a.localeCompare(b, "es")),
-    starters,
+    stats: [
+      { value: manifest.length, label: "páginas en la wiki" },
+      ...types.slice(0, 3).map(([folder, count]) => ({ value: count, label: folder })),
+    ],
+    conexiones: manifest.reduce((sum, n) => sum + n.links.length, 0),
+    novedades: pendingCount(),
+    sectors,
+    types,
+    recent,
   };
 }
 
@@ -36,114 +55,162 @@ export function meta() {
 }
 
 const i = (n: number) => ({ "--i": n }) as React.CSSProperties;
+const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-  const { stats, folders, starters } = loaderData;
+  const { stats, conexiones, sectors, types, recent, novedades } = loaderData;
 
   return (
-    <>
-      {/* ---------- Hero: qué es el sitio y qué podés hacer, en 5 segundos ---------- */}
-      <section className="relative overflow-hidden">
-        <div className="grid-bg pointer-events-none absolute inset-0" aria-hidden="true" />
-        <div
-          className="pointer-events-none absolute -right-40 -top-40 size-[36rem] rounded-full opacity-60 blur-3xl"
-          style={{ background: "radial-gradient(circle, var(--glow), transparent 65%)" }}
-          aria-hidden="true"
-        />
-        <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-14 sm:px-6 md:grid-cols-[1.15fr_1fr] md:pb-24 md:pt-20">
-          <div>
-            <p className="reveal inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 text-sm font-medium text-muted" style={i(0)}>
-              <span className="size-2 rounded-full bg-amber" aria-hidden="true" />
-              Base de conocimiento abierta
-            </p>
-            <h1 className="reveal mt-5 text-4xl font-bold leading-[1.05] sm:text-5xl lg:text-6xl" style={i(1)}>
-              El sector energético,{" "}
-              <span className="relative whitespace-nowrap">
-                <span className="relative z-10">explicado</span>
-                <span
-                  className="absolute inset-x-0 bottom-1 -z-0 h-3 rounded-sm bg-amber/45 sm:bottom-2 sm:h-4"
-                  aria-hidden="true"
-                />
-              </span>{" "}
-              y conectado.
-            </h1>
-            <p className="reveal mt-6 max-w-xl text-lg text-muted sm:text-xl" style={i(2)}>
-              {site.description}
-            </p>
-            <div className="reveal mt-9 flex flex-wrap items-center gap-x-6 gap-y-4" style={i(3)}>
-              <Link to="/notas" viewTransition className="btn-primary">
-                Explorar las notas
-                <ArrowRight />
-              </Link>
-            </div>
-
-            <dl className="reveal mt-12 grid max-w-md grid-cols-3 gap-4 border-t border-border pt-6" style={i(4)}>
-              {(
-                [
-                  ["notas", stats.notas],
-                  ["temas", stats.temas],
-                  ["conexiones", stats.conexiones],
-                ] as const
-              ).map(([label, value]) => (
-                <div key={label}>
-                  <dt className="text-sm text-muted">{label}</dt>
-                  <dd className="text-3xl font-bold tabular-nums">{value}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
-
-          {/* Decorativa: en pantallas chicas se omite para que el contenido suba. */}
-          <div className="reveal relative mx-auto hidden w-full max-w-md sm:block md:max-w-none" style={i(2)}>
-            <EnergyGrid className="w-full drop-shadow-sm" />
-          </div>
+    <div className="mx-auto max-w-6xl px-4 sm:px-6">
+      {/* ---------- Presentación: qué es y qué se puede hacer ---------- */}
+      <section className="pb-20 pt-20 md:pb-28 md:pt-32">
+        <p className="eyebrow reveal" style={i(0)}>
+          Cerebro digital · Sector energético y portuario
+        </p>
+        <h1 className="reveal mt-6 max-w-4xl text-4xl sm:text-5xl lg:text-[4.25rem] lg:leading-[1.05]" style={i(1)}>
+          Todo lo que sabe la práctica, conectado en un solo lugar.
+        </h1>
+        <p className="reveal mt-8 max-w-2xl text-lg text-muted sm:text-xl" style={i(2)}>
+          {site.description}
+        </p>
+        <div className="reveal mt-10 flex flex-wrap items-center gap-x-8 gap-y-4" style={i(3)}>
+          <Link to="/notas" viewTransition className="btn-primary">
+            Explorar la wiki
+            <ArrowRight />
+          </Link>
+          <Link to="/preguntar" viewTransition className="link-chevron text-ink">
+            Preguntale al cerebro
+            <ChevronRight />
+          </Link>
         </div>
+        {novedades > 0 && (
+          <p className="reveal mt-8 text-base text-muted" style={i(4)}>
+            <Link to="/noticias" viewTransition>
+              {novedades === 1 ? "Hay 1 novedad de la semana para revisar" : `Hay ${novedades} novedades de la semana para revisar`}
+            </Link>
+          </p>
+        )}
       </section>
 
-      {/* ---------- Empezá por acá ---------- */}
-      {starters.length > 0 && (
-        <section aria-labelledby="empezar" className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-widest text-amber-text">Empezá por acá</p>
-              <h2 id="empezar" className="mt-2 text-3xl font-bold">
-                Los conceptos más conectados
-              </h2>
+      {/* ---------- Cifras ---------- */}
+      <section aria-label="La wiki en números" className="border-y border-border">
+        <dl className="grid grid-cols-2 lg:grid-cols-4">
+          {stats.map((s, n) => (
+            <div
+              key={s.label}
+              className={`flex flex-col-reverse justify-end py-8 ${n % 2 ? "pl-6 lg:pl-8" : "pr-6"} ${n === 2 ? "lg:pl-8" : ""} ${n > 0 ? "lg:border-l lg:border-border" : ""} ${n % 2 ? "border-l border-border" : ""} ${n >= 2 ? "border-t border-border lg:border-t-0" : ""}`}
+            >
+              <dt className="mt-1 text-sm text-muted first-letter:uppercase">{s.label}</dt>
+              <dd className="font-display text-4xl font-medium tabular-nums">{s.value}</dd>
             </div>
-            <Link to="/notas" viewTransition className="inline-flex min-h-11 items-center font-medium">
-              Ver todas las notas
-            </Link>
-          </div>
-          <NoteList notes={starters} columns={2} />
-        </section>
-      )}
+          ))}
+        </dl>
+      </section>
 
-      {/* ---------- Temas ---------- */}
-      {folders.length > 0 && (
-        <section aria-labelledby="temas" className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-          <p className="text-sm font-semibold uppercase tracking-widest text-amber-text">Por tema</p>
-          <h2 id="temas" className="mt-2 text-3xl font-bold">
-            Recorré el conocimiento por áreas
+      {/* ---------- Sectores ---------- */}
+      {sectors.length > 0 && (
+        <section aria-labelledby="sectores" className="pt-24">
+          <p className="eyebrow">Sectores</p>
+          <h2 id="sectores" className="mt-3 max-w-2xl text-3xl sm:text-4xl">
+            Las áreas de trabajo
           </h2>
-          <ul className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {folders.map(([folder, count], n) => (
-              <li key={folder} className="card reveal group relative p-5" style={i(n)}>
-                <span className="grid size-11 place-items-center rounded-xl bg-surface-2 text-link transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110">
-                  <Folder />
-                </span>
-                <Link
-                  to={`/notas#${encodeURIComponent(folder)}`}
-                  viewTransition
-                  className="mt-4 block text-lg font-semibold after:absolute after:inset-0 after:content-['']"
-                >
-                  {folder}
-                </Link>
-                <p className="mt-1 text-base text-muted">{count === 1 ? "1 nota" : `${count} notas`}</p>
+          <ul className="mt-12 grid gap-x-12 sm:grid-cols-2 lg:grid-cols-3">
+            {sectors.map((s) => (
+              <li key={s.slug} className="group relative flex flex-col border-t border-border pb-12 pt-6">
+                <h3 className="text-xl font-semibold">
+                  <Link
+                    to={`/notas/${s.slug}`}
+                    viewTransition
+                    className="text-ink no-underline after:absolute after:inset-0 after:content-[''] group-hover:underline"
+                  >
+                    {s.title}
+                  </Link>
+                </h3>
+                {s.description && <p className="mt-3 flex-1 text-base text-muted">{s.description}</p>}
+                <p className="mt-5 flex items-center gap-2 text-sm text-muted">
+                  {s.refs === 1 ? "1 página vinculada" : `${s.refs} páginas vinculadas`}
+                  <ChevronRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
+                </p>
               </li>
             ))}
           </ul>
         </section>
       )}
-    </>
+
+      {/* ---------- Actualizado recientemente ---------- */}
+      {recent.length > 0 && (
+        <section aria-labelledby="recientes" className="pt-12">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="eyebrow">Últimas actualizaciones</p>
+              <h2 id="recientes" className="mt-3 text-3xl sm:text-4xl">
+                Lo último que se incorporó
+              </h2>
+            </div>
+            <Link to="/notas" viewTransition className="link-chevron">
+              Ver todas las páginas
+              <ChevronRight />
+            </Link>
+          </div>
+          <ul className="mt-12 border-t border-border">
+            {recent.map((n) => (
+              <li key={n.slug} className="group relative grid gap-2 border-b border-border py-7 md:grid-cols-[14rem_1fr] md:gap-10">
+                <p className="text-sm text-muted">
+                  <span className="uppercase tracking-wider">{n.folder}</span>
+                  <span aria-hidden="true"> · </span>
+                  <time dateTime={n.updated}>{formatDate(n.updated)}</time>
+                </p>
+                <div>
+                  <h3 className="text-lg font-semibold leading-snug">
+                    <Link
+                      to={`/notas/${n.slug}`}
+                      viewTransition
+                      className="text-ink no-underline after:absolute after:inset-0 after:content-[''] group-hover:underline"
+                    >
+                      {n.title}
+                    </Link>
+                  </h3>
+                  {n.description && <p className="mt-2 max-w-3xl text-base text-muted">{n.description}</p>}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* ---------- Por tipo de página ---------- */}
+      {types.length > 0 && (
+        <section aria-labelledby="tipos" className="pt-24">
+          <div className="grid gap-10 lg:grid-cols-[1fr_2fr]">
+            <div>
+              <p className="eyebrow">Por tipo</p>
+              <h2 id="tipos" className="mt-3 text-3xl sm:text-4xl">
+                Casos, normas, proyectos y actores
+              </h2>
+              <p className="mt-4 text-base text-muted">
+                {conexiones} enlaces cruzados: cada hecho vive en un solo lugar y se referencia desde todo lo que toca.
+              </p>
+            </div>
+            <ul className="border-t border-border">
+              {types.map(([folder, count]) => (
+                <li key={folder} className="group border-b border-border">
+                  <Link
+                    to={`/notas#${encodeURIComponent(folder)}`}
+                    viewTransition
+                    className="flex min-h-14 items-center justify-between gap-4 py-3 text-ink no-underline"
+                  >
+                    <span className="text-lg group-hover:underline">{capitalize(folder)}</span>
+                    <span className="flex items-center gap-3 text-sm text-muted">
+                      <span className="tabular-nums">{count === 1 ? "1 página" : `${count} páginas`}</span>
+                      <ChevronRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
+    </div>
   );
 }
