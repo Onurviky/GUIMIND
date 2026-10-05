@@ -1,6 +1,6 @@
 /**
  * Novedades semanales: busca noticias sobre los temas de noticias.config.json,
- * las cruza con la wiki, las resume con el modelo local y guarda el estado en
+ * las cruza con la wiki, las resume con Claude y guarda el estado en
  * data/noticias.json. Lo que el usuario decide agregar se escribe como nota en
  * el vault (y se registra en log.md e index.md).
  *
@@ -35,7 +35,7 @@ import {
 } from "@content/news";
 import { vaultConfig } from "../../scripts/vault-config";
 import { getAllNotes } from "./content.server";
-import { OLLAMA_CONTEXT, OLLAMA_MODEL, ollamaChat } from "./ollama.server";
+import { CLAUDE_MODEL_NAME, claudeText, hasApiKey } from "./claude.server";
 
 interface NewsConfig {
   carpetaEnElVault: string;
@@ -255,8 +255,8 @@ function summarizePending(): Promise<void> {
       if (!next) break;
       next.summary = await summarize(next);
       await save();
-      // Si Ollama no está, no tiene sentido seguir intentando con las demás ahora.
-      if (next.summary.state === "error" && next.summary.reason.startsWith("Ollama no está abierto")) {
+      // Sin clave (o con la clave rechazada) no tiene sentido seguir intentando con las demás ahora.
+      if (next.summary.state === "error" && next.summary.reason.includes("ANTHROPIC_API_KEY")) {
         for (const i of load().items) if (i.summary.state === "pendiente") i.summary = next.summary;
         await save();
         break;
@@ -271,6 +271,9 @@ function summarizePending(): Promise<void> {
 }
 
 async function summarize(item: NewsItem): Promise<NewsItem["summary"]> {
+  if (!hasApiKey()) {
+    return { state: "error", reason: "Falta ANTHROPIC_API_KEY en el .env: agregala, reiniciá GuiMind y pedí el resumen de nuevo." };
+  }
   let text: string;
   try {
     const res = await fetch(item.url, {
@@ -288,17 +291,10 @@ async function summarize(item: NewsItem): Promise<NewsItem["summary"]> {
   if (!text) return { state: "error", reason: "No se pudo leer el texto de la nota (puede tener muro de pago)." };
 
   try {
-    const summary = await ollamaChat(
-      [
-        { role: "system", content: SUMMARY_SYSTEM_PROMPT },
-        { role: "user", content: summaryPrompt(item, text) },
-      ],
-      { numCtx: OLLAMA_CONTEXT, signal: AbortSignal.timeout(300_000) },
-    );
-    return { state: "listo", text: summary, model: OLLAMA_MODEL };
+    const summary = await claudeText(SUMMARY_SYSTEM_PROMPT, summaryPrompt(item, text), AbortSignal.timeout(300_000));
+    return { state: "listo", text: summary, model: CLAUDE_MODEL_NAME };
   } catch (error) {
-    const reason = error instanceof Error ? error.message : "El modelo no pudo resumir la nota.";
-    return { state: "error", reason: reason === "Ollama no está abierto." ? "Ollama no está abierto: abrilo y pedí el resumen de nuevo." : reason };
+    return { state: "error", reason: error instanceof Error ? error.message : "El modelo no pudo resumir la nota." };
   }
 }
 
@@ -310,7 +306,7 @@ function find(id: string): NewsItem {
   return item;
 }
 
-/** Vuelve a pedir el resumen de una noticia (por ejemplo, si Ollama estaba cerrado). */
+/** Vuelve a pedir el resumen de una noticia (por ejemplo, si faltaba la clave de la API). */
 export async function retrySummary(id: string): Promise<void> {
   const item = find(id);
   item.summary = { state: "pendiente" };

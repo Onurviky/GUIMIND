@@ -8,14 +8,8 @@ import type { Route } from "./+types/api.preguntar";
  */
 export async function action({ request }: Route.ActionArgs) {
   if (request.method !== "POST") return json({ type: "error", message: "Usá POST." }, 405);
-  const status = await chatStatus();
-  if (!status.ready) {
-    const message = {
-      "sin-clave": "Falta ANTHROPIC_API_KEY en el archivo .env.",
-      "ollama-apagado": "Ollama no está abierto. Abrí la aplicación Ollama y probá de nuevo.",
-      "modelo-no-descargado": `El modelo ${status.model} no está descargado en Ollama.`,
-    }[status.problem!];
-    return json({ type: "error", message }, 503);
+  if (!chatStatus().ready) {
+    return json({ type: "error", message: "Falta ANTHROPIC_API_KEY en el archivo .env." }, 503);
   }
 
   const wait = rateLimit(request.headers.get("x-forwarded-for") ?? "local");

@@ -81,15 +81,10 @@ Chat que responde **solo** con el contenido de la wiki y cita cada dato como [n]
 2. **Generación** (`app/lib/ask.server.ts`): los fragmentos van agrupados por nota y numerados. El modelo tiene que citar y decir cuándo la wiki no cubre la pregunta. La respuesta llega en streaming.
 3. **Página** (`app/routes/preguntar.tsx`): citas como links, lista de fuentes, y la conversación sobrevive a recargar la página.
 
-### Motor (`LLM_PROVIDER` en `.env`)
+### Motor
 
-| Motor | Qué necesita | Texto por pregunta |
-|---|---|---|
-| `ollama` (por defecto) | Ollama abierto y el modelo descargado (`ollama pull qwen2.5:7b`). Gratis; nada sale de la computadora. | ~20.000 caracteres |
-| `anthropic` | `ANTHROPIC_API_KEY` en `.env`. Cada pregunta tiene costo. | ~160.000 caracteres |
+Responde Claude Opus 5.5 por la API de Anthropic (`app/lib/claude.server.ts`). Necesita `ANTHROPIC_API_KEY` en `.env`; cada pregunta tiene costo. Entran hasta ~160.000 caracteres de la wiki por pregunta.
 
-- Con Ollama, la primera pregunta tarda mientras el modelo se carga en memoria (se empieza a cargar al abrir la página); después responde en segundos. Queda cargado 30 minutos.
-- `OLLAMA_MODEL` cambia el modelo local y `OLLAMA_URL` la dirección de Ollama (por defecto `http://localhost:11434`).
 - Límite: 8 preguntas por minuto. Si una nota contiene instrucciones, el modelo las trata como material de consulta, no como órdenes.
 
 ## Novedades (`/noticias`)
@@ -101,7 +96,7 @@ Cada 7 días GuiMind busca noticias sobre los temas de la wiki y el usuario deci
 - **Relevancia** (`app/lib/news.server.ts`): cada titular se cruza con la wiki; se descartan los que no se relacionan con ninguna nota y se ordenan por relación. La misma noticia contada por otro medio no se repite.
 - **Cuándo busca:** al abrir el inicio o Novedades, si pasaron los días configurados (no hace falta una tarea programada). También con "Buscar novedades ahora".
 - **Agregar al cerebro:** crea `02-wiki/noticias/AAAA-MM-DD - Título.md` con las convenciones del vault (`tipo: noticia`, `estado: pendiente-verificar`, fuente y vínculos a las notas relacionadas) (con el resumen, marcado como generado por IA) y suma una entrada en `log.md` y un link en la sección "Noticias" de `index.md`. Nunca pisa una nota existente.
-- **Resumen:** después de cada búsqueda, en segundo plano y de a una, GuiMind abre cada nota, extrae su texto y el modelo local escribe un resumen de 3–4 oraciones basado solo en ese texto. Si la nota no se puede leer (muro de pago, el medio no responde) lo dice y muestra el copete; se puede reintentar.
+- **Resumen:** después de cada búsqueda, en segundo plano y de a una, GuiMind abre cada nota, extrae su texto y Claude escribe un resumen de 3–4 oraciones basado solo en ese texto. Si la nota no se puede leer (muro de pago, el medio no responde) lo dice y muestra el copete; se puede reintentar.
 - **Estado** (nuevas, agregadas, descartadas, resúmenes): `data/noticias.json`, fuera de git.
 
 ## Estructura

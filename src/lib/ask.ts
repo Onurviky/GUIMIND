@@ -3,8 +3,8 @@
  * Funciones puras (sin red ni disco) para poder testearlas.
  *
  * Las notas se parten en fragmentos (por sección, de hasta ~2.400 caracteres)
- * porque un modelo local lee poco texto por pregunta: así se le mandan las
- * partes relevantes de varias notas en vez de una nota larga entera.
+ * para mandarle al modelo las partes relevantes de varias notas en vez de
+ * notas largas enteras.
  */
 import MiniSearch from "minisearch";
 import { normalizeTerm } from "./search";

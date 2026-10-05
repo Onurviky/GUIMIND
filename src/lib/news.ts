@@ -31,7 +31,7 @@ export interface RelatedNote {
 
 export type NewsStatus = "nueva" | "agregada" | "descartada";
 
-/** Resumen hecho por el modelo local a partir del texto completo de la nota. */
+/** Resumen hecho por Claude a partir del texto completo de la nota. */
 export type NewsSummary =
   | { state: "pendiente" }
   | { state: "listo"; text: string; model: string }
@@ -143,6 +143,11 @@ export function isExcluded(item: Pick<FeedItem, "title" | "snippet" | "source">,
 /** ¿La noticia es de los últimos `days` días? */
 export function isRecent(item: Pick<FeedItem, "published">, days: number, now = Date.now()): boolean {
   return now - Date.parse(item.published) <= days * 86_400_000;
+}
+
+/** Ordena de la más reciente a la menos reciente; mismo momento → la más relevante primero. */
+export function byNewest<T extends Pick<NewsItem, "published" | "score">>(items: T[]): T[] {
+  return [...items].sort((a, b) => Date.parse(b.published) - Date.parse(a.published) || b.score - a.score);
 }
 
 /* -------------------------------------------------------------- duplicados */

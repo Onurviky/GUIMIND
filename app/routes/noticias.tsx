@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Link, useFetcher, useRevalidator } from "react-router";
-import type { NewsItem } from "@content/news";
+import { byNewest, type NewsItem } from "@content/news";
 import { ExternalLink } from "~/components/icons";
 import { getManifest } from "~/lib/content.server";
 import { formatDate } from "~/lib/format";
@@ -16,7 +16,7 @@ export async function loader() {
   const noteSlug = (path?: string) => (path ? bySlugTitle.get(path.split("/").pop()!.replace(/\.md$/, "")) ?? null : null);
   return {
     ...state,
-    items: state.items.map((i) => ({ ...i, noteSlug: noteSlug(i.notePath) })),
+    items: byNewest(state.items).map((i) => ({ ...i, noteSlug: noteSlug(i.notePath) })),
   };
 }
 
@@ -73,7 +73,7 @@ export default function Noticias({ loaderData }: Route.ComponentProps) {
         </h1>
         <p className="reveal mt-4 max-w-2xl text-lg text-muted" style={{ "--i": 2 } as React.CSSProperties}>
           Cada semana GuiMind busca noticias sobre los temas de la wiki, las ordena según cuánto se relacionan con tus
-          notas y las resume con el modelo local. Vos decidís cuáles entran al cerebro.
+          notas y las resume con Claude. Vos decidís cuáles entran al cerebro.
         </p>
       </header>
 
@@ -236,7 +236,7 @@ function DiscardedRow({ item }: { item: Item }) {
   );
 }
 
-/** Resumen del modelo local, o en qué estado está. */
+/** Resumen de Claude, o en qué estado está. */
 function Summary({ item }: { item: Item }) {
   const fetcher = useFetcher<typeof action>();
   const { summary } = item;
@@ -253,7 +253,7 @@ function Summary({ item }: { item: Item }) {
     return (
       <p className="mt-3 flex items-center gap-2 text-base text-muted">
         <span className="size-2 animate-pulse rounded-full bg-ink" aria-hidden="true" />
-        Leyendo la nota y resumiéndola con el modelo local…
+        Leyendo la nota y resumiéndola con Claude…
       </p>
     );
   }

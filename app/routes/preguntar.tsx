@@ -4,7 +4,7 @@ import { parseAnswer, type AnswerInline } from "@content/answer";
 import type { AskSource, AskTurn } from "@content/ask";
 import { ConfirmDialog } from "~/components/ConfirmDialog";
 import { ArrowRight } from "~/components/icons";
-import { chatStatus, warmUp, type ChatStatus } from "~/lib/ask.server";
+import { chatStatus } from "~/lib/ask.server";
 import { getManifest } from "~/lib/content.server";
 import { site } from "~/site";
 import type { Route } from "./+types/preguntar";
@@ -18,8 +18,7 @@ export async function loader() {
   const byRefs = (a: { slug: string }, b: { slug: string }) => (inbound.get(b.slug) ?? 0) - (inbound.get(a.slug) ?? 0);
   const sectors = manifest.filter((n) => n.folder === "sectores").sort(byRefs).map((n) => n.title).slice(0, 3);
   const project = manifest.filter((n) => n.folder === "proyectos").sort(byRefs)[0]?.title ?? null;
-  const status = await chatStatus();
-  if (status.ready) warmUp();
+  const status = chatStatus();
   return { status, sectors, project };
 }
 
@@ -144,14 +143,12 @@ export default function Preguntar({ loaderData }: Route.ComponentProps) {
           vez de inventar.
         </p>
         <p className="reveal mt-3 text-base text-muted" style={{ "--i": 3 } as React.CSSProperties}>
-          {status.provider === "ollama"
-            ? `Responde ${status.model}, un modelo que corre en esta computadora: gratis y sin mandar nada a internet. Es más lento y menos preciso que un modelo en la nube; revisá las fuentes.`
-            : `Responde ${status.model} a través de la API de Anthropic. Cada pregunta tiene un costo de uso.`}
+          Responde {status.model} a través de la API de Anthropic. Cada pregunta tiene un costo de uso.
         </p>
       </header>
 
       {!status.ready ? (
-        <SetupNotice status={status} />
+        <SetupNotice />
       ) : (
         <>
           {exchanges.length === 0 && (
@@ -358,51 +355,23 @@ function ExchangeView({ exchange: e, onRetry }: { exchange: Exchange; onRetry?: 
 }
 
 /** Qué falta para que el chat funcione, con los pasos exactos. */
-function SetupNotice({ status }: { status: ChatStatus }) {
+function SetupNotice() {
   const code = "rounded-sm bg-surface-2 px-1.5 py-0.5 text-ink";
   return (
     <section className="card mt-10 border-l-2 border-l-ink p-6" aria-labelledby="config">
-      {status.problem === "sin-clave" ? (
-        <>
-          <h2 id="config" className="font-sans text-xl font-semibold">
-            Falta configurar la clave de la API de Claude
-          </h2>
-          <ol className="mt-3 list-decimal space-y-2 pl-5 text-base text-muted">
-            <li>
-              Creá una clave en <span className="text-ink">console.anthropic.com</span>, sección API Keys.
-            </li>
-            <li>
-              En el archivo <code className={code}>.env</code> de la carpeta de GuiMind agregá:{" "}
-              <code className={code}>ANTHROPIC_API_KEY=tu-clave</code>
-            </li>
-            <li>Cerrá la ventana de GuiMind y abrila de nuevo con “Iniciar GuiMind”.</li>
-          </ol>
-          <p className="mt-4 text-base text-muted">
-            O usá el modelo local y gratuito: poné <code className={code}>LLM_PROVIDER=ollama</code> en el{" "}
-            <code className={code}>.env</code>.
-          </p>
-        </>
-      ) : status.problem === "ollama-apagado" ? (
-        <>
-          <h2 id="config" className="font-sans text-xl font-semibold">
-            Ollama no está abierto
-          </h2>
-          <p className="mt-3 text-base text-muted">
-            El chat usa el modelo local <span className="text-ink">{status.model}</span>, que corre con Ollama. Abrí la
-            aplicación Ollama desde el menú Inicio y recargá esta página.
-          </p>
-        </>
-      ) : (
-        <>
-          <h2 id="config" className="font-sans text-xl font-semibold">
-            Falta descargar el modelo {status.model}
-          </h2>
-          <p className="mt-3 text-base text-muted">
-            Abrí una terminal y corré <code className={code}>ollama pull {status.model}</code>. Es una descarga única de
-            unos 5 GB. Cuando termine, recargá esta página.
-          </p>
-        </>
-      )}
+      <h2 id="config" className="font-sans text-xl font-semibold">
+        Falta configurar la clave de la API de Claude
+      </h2>
+      <ol className="mt-3 list-decimal space-y-2 pl-5 text-base text-muted">
+        <li>
+          Creá una clave en <span className="text-ink">console.anthropic.com</span>, sección API Keys.
+        </li>
+        <li>
+          En el archivo <code className={code}>.env</code> de la carpeta de GuiMind agregá:{" "}
+          <code className={code}>ANTHROPIC_API_KEY=tu-clave</code>
+        </li>
+        <li>Cerrá la ventana de GuiMind y abrila de nuevo con “Iniciar GuiMind”.</li>
+      </ol>
     </section>
   );
 }

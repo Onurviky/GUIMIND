@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  byNewest,
   directUrl,
   extractArticleText,
   feedUrl,
@@ -73,6 +74,16 @@ describe("feed de noticias (Bing)", () => {
     const now = Date.parse("2026-09-29T00:00:00Z");
     expect(isRecent({ published: "2026-09-25T00:00:00Z" }, 7, now)).toBe(true);
     expect(isRecent({ published: "2026-09-10T00:00:00Z" }, 7, now)).toBe(false);
+  });
+
+  it("ordena de la más reciente a la menos reciente", () => {
+    const sorted = byNewest([
+      { id: "vieja", published: "2026-09-20T10:00:00Z", score: 50 },
+      { id: "nueva-poco", published: "2026-09-28T10:00:00Z", score: 1 },
+      { id: "media", published: "2026-09-25T10:00:00Z", score: 5 },
+      { id: "nueva-mucho", published: "2026-09-28T10:00:00Z", score: 9 },
+    ]);
+    expect(sorted.map((i) => i.id)).toEqual(["nueva-mucho", "nueva-poco", "media", "vieja"]);
   });
 });
 
